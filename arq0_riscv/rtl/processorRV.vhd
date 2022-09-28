@@ -129,9 +129,48 @@ architecture rtl of processorRV is
   signal RS1, RS2, RD   : std_logic_vector(4 downto 0);
 
 
+  -- IFID signals
+  signal PC_IF, PC_ID   : std_logic_vector(31 downto 0);
+  signal Instruction_IF, Instruction_ID : std_logic_vector(31 downto 0);
+  signal enable_IFID    : std_logic;
+
+  -- IDEX signals
+
+  -- EXMEM signals
+
+  -- MEMWB signals
+
+
 begin
 
   PC_next <= Addr_Jump_dest when desition_Jump = '1' else PC_plus4;
+
+  -- Elements involved in the IFID register following the diagram: 
+  -- PC (maybe pc+4 too?)
+  -- Instruction vector
+
+  IFID: process(clk, reset, enable_IFID, PC_IF, Instruction_IF)
+  begin
+    if reset = '1' then
+      PC_ID <= (others=>'0');
+      Instruction_ID <= (others=>'0');
+    elsif rising_edge(clk) and enable_IFID = '1' then
+      PC_ID <= PC_IF;
+      Instruction_ID <= Instruction_IF;
+    end if;
+  end process;
+
+
+
+
+
+
+
+
+
+
+
+
 
   -- Program Counter
   PC_reg_proc: process(Clk, Reset)

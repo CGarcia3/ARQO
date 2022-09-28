@@ -77,7 +77,7 @@ begin
          for i in 0 to 7 loop
             read(current_line, str3); --Read chars " 0x"
             hread(current_line, datum);
-            memo( effective_addr + i*4) <= datum;
+            memo( effective_addr + i) <= datum;
          end loop;
 
       end loop;
