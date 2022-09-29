@@ -128,20 +128,21 @@ architecture rtl of processorRV is
   signal Funct7         : std_logic_vector(6 downto 0);
   signal RS1, RS2, RD   : std_logic_vector(4 downto 0);
 
-
-  -- IF signals
+  --------------------------------------------------------------
+  --------------------------------------------------------------
+  --------------------------------------------------------------
+  --------------------------------------------------------------
+  -- IF signals-------------------------------------------------
   signal enable_IFID    : std_logic;
   signal PC_IF          : std_logic_vector(31 downto 0);
   signal Instruction_IF : std_logic_vector(31 downto 0);
   
   -- ID signals
+  -- izq
   signal enable_IDEX    : std_logic;
   signal PC_ID          : std_logic_vector(31 downto 0);
   signal Instruction_ID : std_logic_vector(31 downto 0);
-  signal Inst11_7       : std_logic_vector(4 downto 0);
-  signal Inst31_25      : std_logic_vector(6 downto 0);
-  signal Inst14_12      : std_logic_vector(3 downto 0);
-  
+  -- der  
   signal reg_RS_ID, reg_RT_ID : std_logic_vector(31 downto 0);
   
   signal Ctrl_Branch_ID, Ctrl_MemWrite_ID, Ctrl_MemRead_ID  : std_logic;
@@ -152,12 +153,47 @@ architecture rtl of processorRV is
   signal Inm_ext_ID     : std_logic_vector(31 downto 0);
 
   -- EX signals
+  --izq
+  SIGNAL PC_EX          : std_logic_vector(31 downto 0);
 
+  signal Inst11_7_EX    : std_logic_vector(4 downto 0);
+  signal Inst31_25_EX   : std_logic_vector(6 downto 0);
+  signal Inst14_12_EX   : std_logic_vector(3 downto 0);
+  
+  signal reg_RS_EX, reg_RT_EX : std_logic_vector(31 downto 0);
+  
+  signal Ctrl_Branch_EX, Ctrl_MemWrite_EX, Ctrl_MemRead_EX  : std_logic;
+  signal Ctrl_ALUSrc_EX,  Ctrl_jalr_EX, Ctrl_RegWrite_EX    : std_logic; 
+  signal Ctrl_ResSrc_EX, Ctrl_PcLui_EX : std_logic_vector(1 downto 0);
+  signal Ctrl_ALUOP_EX  : std_logic_vector(2 downto 0);
+  
+  signal Inm_ext_EX     : std_logic_vector(31 downto 0);
+  --der
+  signal PC_plusAddress_EX  : std_logic_vector(31 downto 0);
+  signal zero_EX        :std_logic;
+  signal Alu_Res_EX     :std_logic_vector(31 downto 0); 
 
   -- MEM signals
+  --izq
+  signal PC_plusAddress_MEM  : std_logic_vector(31 downto 0);
+  signal zero_MEM       :std_logic;
+  signal Mem_addr_MEM   :std_logic_vector(31 downto 0); 
+  signal Mem_Wd_MEM     :std_logic_vector(31 downto 0);
+  signal Inst11_7_MEM   : std_logic_vector(4 downto 0); 
 
+  signal Ctrl_Branch_MEM, Ctrl_MemWrite_MEM, Ctrl_MemRead_MEM  : std_logic;
+  signal Ctrl_jalr_MEM, Ctrl_RegWrite_MEM    : std_logic; 
+  signal Ctrl_ResSrc_MEM, Ctrl_PcLui_MEM : std_logic_vector(1 downto 0);
+
+  --der
+  signal Mem_Rd_MEM     : std_logic_vector(31 downto 0);
 
   -- WB signals
+  signal Mem_Rd_WB, Mem_addr_WB : std_logic_vector(31 downto 0);
+  ignal Inst11_7_WB     : std_logic_vector(4 downto 0); 
+
+  signal Ctrl_jalr_WB, Ctrl_RegWrite_WB    : std_logic; 
+  signal Ctrl_ResSrc_WB, Ctrl_PcLui_WB : std_logic_vector(1 downto 0);
 
 begin
 
@@ -182,18 +218,119 @@ begin
   begin
     if reset = '1' then
       --signals to 0
-
-
+      PC_EX <= (others=>'0');
+      Inst11_7_EX <= (others=>'0');
+      Inst31_25_EX <= (others=>'0');
+      Inst14_12_EX <= (others=>'0');
+  
+      reg_RS_EX <= (others=>'0');
+      reg_RT_EX <= (others=>'0');
+  
+      Ctrl_Branch_EX <= '0';
+      Ctrl_MemWrite_EX <= '0';
+      Ctrl_MemRead_EX <= '0';
+      Ctrl_ALUSrc_EX <= '0';
+      Ctrl_jalr_EX <= '0';
+      Ctrl_RegWrite_EX <= '0';
+      Ctrl_ResSrc_EX <= (others=>'0');
+      Ctrl_PcLui_EX <= (others=>'0');
+      Ctrl_ALUOP_EX <= (others=>'0');
+  
+      Inm_ext_EX <= (others=>'0');
 
     elsif rising_edge(clk) and enable_IDEX = '1' then
       --signals to values
+      PC_EX <= PC_ID;
+      Inst11_7_EX <= Instruction_ID(11 downto 7);
+      Inst31_25_EX <= Instruction_ID(31 downto 25);
+      Inst14_12_EX <= Instruction_ID(14 downto 12);
+  
+      reg_RS_EX <= reg_RS_ID;
+      reg_RT_EX <= reg_RT_ID;
+  
+      Ctrl_Branch_EX <= Ctrl_Branch_ID;
+      Ctrl_MemWrite_EX <= Ctrl_MemWrite_ID;
+      Ctrl_MemRead_EX <= Ctrl_MemRead_ID;
+      Ctrl_ALUSrc_EX <= Ctrl_ALUSrc_ID;
+      Ctrl_jalr_EX <= Ctrl_jalr_ID;
+      Ctrl_RegWrite_EX <= Ctrl_RegWrite_ID;
+      Ctrl_ResSrc_EX <= Ctrl_ResSrc_ID;
+      Ctrl_PcLui_EX <= Ctrl_PcLui_ID;
+      Ctrl_ALUOP_EX <= Ctrl_ALUOP_ID;
+  
+      Inm_ext_EX <= Inm_ext_ID;
 
     end if;
   end process;
 
 
+  EXMEM: process(clk, reset)
+  begin
+    if reset = '1' then
+      --signals to 0
+      PC_plusAddress_MEM <= (others=>'0');
+      zero_MEM <= '0';
+      Mem_addr_MEM <= (others=>'0');
+      Mem_Wd_MEM <= (others=>'0');
+  
+      Ctrl_Branch_MEM <= '0';
+      Ctrl_MemWrite_MEM <= '0';
+      Ctrl_MemRead_MEM <= '0';
+      Ctrl_jalr_MEM <= '0';
+      Ctrl_RegWrite_MEM <= '0';
+      Ctrl_ResSrc_MEM <= (others=>'0');
+      Ctrl_PcLui_MEM <= (others=>'0');
 
+      Inst11_7_MEM <= (others=>'0');
 
+    elsif rising_edge(clk) and enable_EXMEM = '1' then
+      --signals to values
+      PC_plusAddress_MEM <= PC_plusAddress_EX;
+      zero_MEM <= zero_EX;
+      Mem_addr_MEM <= Alu_Res_EX;
+      Mem_Wd_MEM <= reg_RT_EX;
+      Inst11_7_MEM <= Inst11_7_EX;
+  
+      Ctrl_Branch_MEM <= Ctrl_Branch_EX;
+      Ctrl_MemWrite_MEM <= Ctrl_MemWrite_EX;
+      Ctrl_MemRead_MEM <= Ctrl_MemRead_EX;
+      Ctrl_jalr_MEM <= Ctrl_jalr_EX;
+      Ctrl_RegWrite_MEM <= Ctrl_RegWrite_EX;
+      Ctrl_ResSrc_MEM <= Ctrl_ResSrc_EX;
+      Ctrl_PcLui_MEM <= Ctrl_PcLui_EX;
+
+    end if;
+  end process;
+  
+
+  MEMWB: process(clk, reset)
+  begin
+    if reset = '1' then
+      --signals to 0
+      Mem_Rd_WB <= (others=>'0');
+      Mem_addr_WB <= (others=>'0');
+  
+      Ctrl_jalr_WB <= '0';
+      Ctrl_RegWrite_WB <= '0';
+      Ctrl_ResSrc_WB <= '0';
+      Ctrl_PcLui_WB <= '0';
+
+      Inst11_7_WB <= (others=>'0');
+
+    elsif rising_edge(clk) and enable_EXMEM = '1' then
+      --signals to values
+      Mem_Rd_WB <= Mem_Rd_MEM;
+      Mem_addr_WB <= Mem_addr_MEM;
+  
+      Ctrl_jalr_WB <= Ctrl_jalr_MEM;
+      Ctrl_RegWrite_WB <= Ctrl_RegWrite_MEM;
+      Ctrl_ResSrc_WB <= Ctrl_ResSrc_MEM;
+      Ctrl_PcLui_WB <= Ctrl_PcLui_MEM;
+
+      Inst11_7_WB <= Inst11_7_MEM;
+
+    end if;
+  end process;
 
 
 
