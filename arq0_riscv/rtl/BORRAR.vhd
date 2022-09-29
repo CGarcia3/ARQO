@@ -156,8 +156,10 @@ begin
 
   
   PC_counter2: process(clk, reset,
-                      Instruction_ID, reg_RS_ID, reg_RT_ID, Ctrl_Branch_ID, Ctrl_MemWrite_ID, Ctrl_MemRead_ID,  
-                      Ctrl_ALUSrc_ID,  Ctrl_RegDest_ID, Ctrl_MemToReg_ID, Ctrl_RegWrite_ID, enable_ID_EX, Inm_ext_ID,
+                      Instruction_ID, reg_RS_ID, reg_RT_ID, Ctrl_Branch_ID, 
+                      Ctrl_MemWrite_ID, Ctrl_MemRead_ID,  
+                      Ctrl_ALUSrc_ID,  Ctrl_RegDest_ID, Ctrl_MemToReg_ID, 
+                      Ctrl_RegWrite_ID, enable_ID_EX, Inm_ext_ID,
                       Ctrl_ALUOP_ID, pcmas4_ID, Addr_Jump_ID, Ctrl_Jump_ID) --ID/EX
   begin
     if reset = '1' then

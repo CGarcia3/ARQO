@@ -129,17 +129,35 @@ architecture rtl of processorRV is
   signal RS1, RS2, RD   : std_logic_vector(4 downto 0);
 
 
-  -- IFID signals
-  signal PC_IF, PC_ID   : std_logic_vector(31 downto 0);
-  signal Instruction_IF, Instruction_ID : std_logic_vector(31 downto 0);
+  -- IF signals
   signal enable_IFID    : std_logic;
+  signal PC_IF          : std_logic_vector(31 downto 0);
+  signal Instruction_IF : std_logic_vector(31 downto 0);
+  
+  -- ID signals
+  signal enable_IDEX    : std_logic;
+  signal PC_ID          : std_logic_vector(31 downto 0);
+  signal Instruction_ID : std_logic_vector(31 downto 0);
+  signal Inst11_7       : std_logic_vector(4 downto 0);
+  signal Inst31_25      : std_logic_vector(6 downto 0);
+  signal Inst14_12      : std_logic_vector(3 downto 0);
+  
+  signal reg_RS_ID, reg_RT_ID : std_logic_vector(31 downto 0);
+  
+  signal Ctrl_Branch_ID, Ctrl_MemWrite_ID, Ctrl_MemRead_ID  : std_logic;
+  signal Ctrl_ALUSrc_ID,  Ctrl_jalr_ID, Ctrl_RegWrite_ID    : std_logic; 
+  signal Ctrl_ResSrc_ID, Ctrl_PcLui_ID : std_logic_vector(1 downto 0);
+  signal Ctrl_ALUOP_ID  : std_logic_vector(2 downto 0);
+  
+  signal Inm_ext_ID     : std_logic_vector(31 downto 0);
 
-  -- IDEX signals
+  -- EX signals
 
-  -- EXMEM signals
 
-  -- MEMWB signals
+  -- MEM signals
 
+
+  -- WB signals
 
 begin
 
@@ -149,7 +167,7 @@ begin
   -- PC (maybe pc+4 too?)
   -- Instruction vector
 
-  IFID: process(clk, reset, enable_IFID, PC_IF, Instruction_IF)
+  IFID: process(clk, reset)
   begin
     if reset = '1' then
       PC_ID <= (others=>'0');
@@ -160,9 +178,18 @@ begin
     end if;
   end process;
 
+  IDEX: process(clk, reset)
+  begin
+    if reset = '1' then
+      --signals to 0
 
 
 
+    elsif rising_edge(clk) and enable_IDEX = '1' then
+      --signals to values
+
+    end if;
+  end process;
 
 
 
