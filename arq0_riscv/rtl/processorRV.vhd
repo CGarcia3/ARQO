@@ -9,6 +9,7 @@ library ieee;
 use ieee.std_logic_1164.all;
 use ieee.std_logic_unsigned.all;
 use work.RISCV_pack.all;
+use ieee.numeric_std.all;
 
 entity processorRV is
    port(
@@ -154,11 +155,12 @@ architecture rtl of processorRV is
 
   -- EX signals
   --izq
+  signal enable_EXMEM    : std_logic;
   SIGNAL PC_EX          : std_logic_vector(31 downto 0);
 
   signal Inst11_7_EX    : std_logic_vector(4 downto 0);
   signal Inst31_25_EX   : std_logic_vector(6 downto 0);
-  signal Inst14_12_EX   : std_logic_vector(3 downto 0);
+  signal Inst14_12_EX   : std_logic_vector(2 downto 0);
   
   signal reg_RS_EX, reg_RT_EX : std_logic_vector(31 downto 0);
   
@@ -168,15 +170,16 @@ architecture rtl of processorRV is
   signal Ctrl_ALUOP_EX  : std_logic_vector(2 downto 0);
   
   signal Inm_ext_EX     : std_logic_vector(31 downto 0);
+  signal Inm_ext_EX_aux     : std_logic_vector(31 downto 0);
   --der
   signal PC_plusAddress_EX  : std_logic_vector(31 downto 0);
-  signal zero_EX        :std_logic;
+  signal zero_EX, branch_true_EX        :std_logic;
   signal Alu_Res_EX     :std_logic_vector(31 downto 0); 
 
   -- MEM signals
+  signal enable_MEMWB    : std_logic;
   --izq
-  signal PC_plusAddress_MEM  : std_logic_vector(31 downto 0);
-  signal zero_MEM       :std_logic;
+  signal branch_true_MEM       :std_logic;
   signal Mem_addr_MEM   :std_logic_vector(31 downto 0); 
   signal Mem_Wd_MEM     :std_logic_vector(31 downto 0);
   signal Inst11_7_MEM   : std_logic_vector(4 downto 0); 
@@ -190,7 +193,7 @@ architecture rtl of processorRV is
 
   -- WB signals
   signal Mem_Rd_WB, Mem_addr_WB : std_logic_vector(31 downto 0);
-  ignal Inst11_7_WB     : std_logic_vector(4 downto 0); 
+  signal Inst11_7_WB     : std_logic_vector(4 downto 0); 
 
   signal Ctrl_jalr_WB, Ctrl_RegWrite_WB    : std_logic; 
   signal Ctrl_ResSrc_WB, Ctrl_PcLui_WB : std_logic_vector(1 downto 0);
@@ -199,6 +202,23 @@ begin
 
   PC_next <= Addr_Jump_dest when desition_Jump = '1' else PC_plus4;
 
+   -- Program Counter
+  PC_reg_proc: process(Clk, Reset)
+  begin
+    if Reset = '1' then
+      PC_reg <= (22 => '1', others => '0'); -- 0040_0000
+    elsif rising_edge(Clk) then
+      PC_reg <= PC_next;
+    end if;
+  end process;
+
+
+  PC_plus4    <= PC_reg + 4;
+  IAddr       <= PC_reg;
+  Instruction_IF <= IDataIn;
+  PC_IF <= PC_reg;
+  
+  
   -- Elements involved in the IFID register following the diagram: 
   -- PC (maybe pc+4 too?)
   -- Instruction vector
@@ -263,13 +283,22 @@ begin
     end if;
   end process;
 
+  Inm_ext_EX_aux <= Inm_ext_EX(30 downto 0) & '0';
+  PC_PlusAddress_EX <= PC_EX + Inm_ext_EX_aux;
+  Alu_Op2    <= reg_RT_EX when Ctrl_ALUSrc_EX = '0' else Inm_ext_EX;
+
+  branch_true_EX    <= '1' when (((Inst14_12_EX = BR_F3_BEQ) and (zero_EX = '1')) or
+                                ((Inst14_12_EX = BR_F3_BNE) and (zero_EX = '0')) or
+                                ((Inst14_12_EX = BR_F3_BLT) and (Alu_SIGN = '1')) or
+                                ((Inst14_12_EX = BR_F3_BGT) and (Alu_SIGN = '0'))) else
+                              '0';
 
   EXMEM: process(clk, reset)
   begin
     if reset = '1' then
       --signals to 0
-      PC_plusAddress_MEM <= (others=>'0');
-      zero_MEM <= '0';
+      Addr_Jump_dest <= (others=>'0');
+      branch_true_MEM <= '0';
       Mem_addr_MEM <= (others=>'0');
       Mem_Wd_MEM <= (others=>'0');
   
@@ -285,8 +314,8 @@ begin
 
     elsif rising_edge(clk) and enable_EXMEM = '1' then
       --signals to values
-      PC_plusAddress_MEM <= PC_plusAddress_EX;
-      zero_MEM <= zero_EX;
+      Addr_Jump_dest <= PC_plusAddress_EX;
+      branch_true_MEM <= branch_true_EX;
       Mem_addr_MEM <= Alu_Res_EX;
       Mem_Wd_MEM <= reg_RT_EX;
       Inst11_7_MEM <= Inst11_7_EX;
@@ -301,6 +330,16 @@ begin
 
     end if;
   end process;
+
+  desition_Jump  <= Ctrl_Branch_MEM and branch_true_MEM;
+
+    
+  DAddr      <= Mem_addr_MEM;
+  DDataOut   <= Mem_Wd_MEM;
+  DWrEn      <= Ctrl_MemWrite_MEM;
+  DRdEn      <= Ctrl_MemRead_MEM;
+  Mem_Rd_MEM <= DDataIn;
+
   
 
   MEMWB: process(clk, reset)
@@ -312,12 +351,12 @@ begin
   
       Ctrl_jalr_WB <= '0';
       Ctrl_RegWrite_WB <= '0';
-      Ctrl_ResSrc_WB <= '0';
-      Ctrl_PcLui_WB <= '0';
+      Ctrl_ResSrc_WB <= (others=>'0');
+      Ctrl_PcLui_WB <= (others=>'0');
 
       Inst11_7_WB <= (others=>'0');
 
-    elsif rising_edge(clk) and enable_EXMEM = '1' then
+    elsif rising_edge(clk) and enable_MEMWB = '1' then
       --signals to values
       Mem_Rd_WB <= Mem_Rd_MEM;
       Mem_addr_WB <= Mem_addr_MEM;
@@ -332,117 +371,89 @@ begin
     end if;
   end process;
 
+                                    -- MemtoReg
+  reg_RD_data <=  Mem_Rd_WB     when Ctrl_ResSrc_WB = "01" else
+                  Mem_addr_WB   when Ctrl_ResSrc_WB = "00" else 
+                  PC_plus4; -- no sabria decir por que es esto,
+            -- no sale en el diseño
+                     
 
 
 
+  enable_IFID <= '1';
+  enable_IDEX <= '1';
+  enable_EXMEM <= '1';
+  enable_MEMWB <= '1'; 
 
-  -- Program Counter
-  PC_reg_proc: process(Clk, Reset)
-  begin
-    if Reset = '1' then
-      PC_reg <= (22 => '1', others => '0'); -- 0040_0000
-    elsif rising_edge(Clk) then
-      PC_reg <= PC_next;
-    end if;
-  end process;
-
-  PC_plus4    <= PC_reg + 4;
-  IAddr       <= PC_reg;
-  Instruction <= IDataIn;
-  Funct3      <= instruction(14 downto 12); -- Campo "funct3" de la instruccion
-  Funct7      <= instruction(31 downto 25); -- Campo "funct7" de la instruccion
-  RD          <= Instruction(11 downto 7);
-  RS1         <= Instruction(19 downto 15);
-  RS2         <= Instruction(24 downto 20);
-
+  --PORT MAPS
   RegsRISCV : reg_bank
   port map (
     Clk   => Clk,
     Reset => Reset,
-    A1    => RS1, --Instruction(19 downto 15), --rs1
-    Rd1   => reg_RS,
-    A2    => RS2, --Instruction(24 downto 20), --rs2
-    Rd2   => reg_RT,
-    A3    => RD, --Instruction(11 downto 7),,
+    A1    => Instruction_ID(19 downto 15), --Instruction(19 downto 15), --rs1
+    Rd1   => reg_RS_ID,
+    A2    => Instruction_ID(24 downto 20), --Instruction(24 downto 20), --rs2
+    Rd2   => reg_RT_ID,
+    A3    => Inst11_7_WB, --Instruction(11 downto 7),,
     Wd3   => reg_RD_data,
-    We3   => Ctrl_RegWrite
+    We3   => Ctrl_RegWrite_WB
   );
 
   UnidadControl : control_unit
   port map(
-    OpCode   => Instruction(6 downto 0),
+    OpCode   => Instruction_ID(6 downto 0),
     -- Señales para el PC
     --Jump   => CONTROL_JUMP,
-    Branch   => Ctrl_Branch,
+    Branch   => Ctrl_Branch_ID,
     -- Señales para la memoria
-    ResultSrc=> Ctrl_ResSrc,
-    MemWrite => Ctrl_MemWrite,
-    MemRead  => Ctrl_MemRead,
+    ResultSrc=> Ctrl_ResSrc_ID,
+    MemWrite => Ctrl_MemWrite_ID,
+    MemRead  => Ctrl_MemRead_ID,
     -- Señales para la ALU
-    ALUSrc   => Ctrl_ALUSrc,
-    AuipcLui => Ctrl_PcLui,
-    ALUOP    => Ctrl_ALUOP,
+    ALUSrc   => Ctrl_ALUSrc_ID,
+    AuipcLui => Ctrl_PcLui_ID,
+    ALUOP    => Ctrl_ALUOP_ID,
     -- señal generacion salto
-    Ins_jalr => Ctrl_jalr, -- 0=any instrucion, 1=jalr
+    Ins_jalr => Ctrl_jalr_ID, -- 0=any instrucion, 1=jalr
     -- Señales para el GPR
-    RegWrite => Ctrl_RegWrite
+    RegWrite => Ctrl_RegWrite_ID
   );
 
   inmed_op : Imm_Gen
   port map (
-        instr    => Instruction,
-        imm      => Inm_ext 
+        instr    => Instruction_ID,
+        imm      => Inm_ext_ID 
   );
-
-  Addr_Branch    <= PC_reg + Inm_ext;
-  Addr_jalr      <= reg_RS + Inm_ext;
-
-  desition_Jump  <= Ctrl_Jalr or (Ctrl_Branch and branch_true);
-  branch_true    <= '1' when ( ((Funct3 = BR_F3_BEQ) and (Alu_ZERO = '1')) or
-                               ((Funct3 = BR_F3_BNE) and (Alu_ZERO = '0')) or
-                               ((Funct3 = BR_F3_BLT) and (Alu_SIGN = '1')) or
-                               ((Funct3 = BR_F3_BGT) and (Alu_SIGN = '0')) ) else
-                    '0';
- 
-  Addr_Jump_dest <= Addr_jalr   when Ctrl_jalr = '1' else
-                    Addr_Branch when Ctrl_Branch='1' else
-                    (others =>'0');
 
   Alu_control_i: alu_control
   port map(
     -- Entradas:
-    ALUOp  => Ctrl_ALUOP, -- Codigo de control desde la unidad de control
-    Funct3  => Funct3,    -- Campo "funct3" de la instruccion
-    Funct7  => Funct7,    -- Campo "funct7" de la instruccion
+    ALUOp  => Ctrl_ALUOP_ID, -- Codigo de control desde la unidad de control
+    Funct3  => Inst14_12_EX,    -- Campo "funct3" de la instruccion
+    Funct7  => Inst31_25_EX,    -- Campo "funct7" de la instruccion
     -- Salida de control para la ALU:
     ALUControl => AluControl -- Define operacion a ejecutar por la ALU
   );
 
   Alu_RISCV : alu_RV
   port map (
-    OpA      => Alu_Op1,
+    OpA      => reg_RS_EX,
     OpB      => Alu_Op2,
     Control  => AluControl,
-    Result   => Alu_Res,
+    Result   => Alu_Res_EX,
     Signflag => Alu_SIGN,
     carryOut => open,
-    Zflag    => Alu_ZERO
+    Zflag    => zero_EX
   );
 
-  Alu_Op1    <= PC_reg           when Ctrl_PcLui = "00" else
-                (others => '0')  when Ctrl_PcLui = "01" else
-                reg_RS; -- any other 
-  Alu_Op2    <= reg_RT when Ctrl_ALUSrc = '0' else Inm_ext;
 
+  --cosas para que el jal funcione que no pienso hacer porque he seguido el diseño
+ 
+  --Addr_Branch    <= PC_reg + Inm_ext;
+  --Addr_jalr      <= reg_RS + Inm_ext;
 
-  DAddr      <= Alu_Res;
-  DDataOut   <= reg_RT;
-  DWrEn      <= Ctrl_MemWrite;
-  dRdEn      <= Ctrl_MemRead;
-  dataIn_Mem <= DDataIn;
+  
+  
 
-  reg_RD_data <= dataIn_Mem when Ctrl_ResSrc = "01" else
-                 PC_plus4   when Ctrl_ResSrc = "10" else 
-                 Alu_Res; -- When 00
 
 end architecture;
