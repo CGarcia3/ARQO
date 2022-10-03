@@ -1,0 +1,502 @@
+m255
+K4
+z2
+!s11e vcom 2020.1 2020.01, Jan 28 2020
+13
+!s112 1.1
+!i10d 8192
+!i10e 25
+!i10f 100
+cModel Technology
+Z0 d/home/alumnos/e400496/arq0_riscv/sim
+T_opt
+!s110 1664383885
+VnW5k[jH=POZJG81_^ChKX0
+Z1 04 14 2 work processorrv_tb tb 1
+=1-000ae431a4f1-63347b8d-76c15-404f
+Z2 o-quiet -auto_acc_if_foreign -work work -g N_CYCLES=150 -g INIT_FILENAME_DATA=\"datos.txt\" -g INIT_FILENAME_INST=\"instrucciones.txt\"
+Z3 tCvgOpt 0
+n@_opt
+Z4 OL;O;2020.1;71
+R0
+T_opt1
+Z5 !s110 1664535768
+V:G7bI66le<I?;hOmMci741
+R1
+=1-000ae431a4f1-6336ccd8-1e7a7-3d09
+R2
+R3
+n@_opt1
+R4
+Ealu_control
+Z6 w1664474209
+Z7 DPx4 work 10 riscv_pack 0 22 bR`K==KoP4KQ2hjM;TPN61
+Z8 DPx4 ieee 15 std_logic_arith 0 22 [G314=:2zXJ`VORJe1J@Z1
+Z9 DPx4 ieee 18 std_logic_unsigned 0 22 ;eZjO2D4ZDz<]0>8AL<ne1
+Z10 DPx3 std 6 textio 0 22 zE1`LPoLg^DX3Oz^4Fj1K3
+Z11 DPx4 ieee 14 std_logic_1164 0 22 cVAk:aDinOX8^VGI1ekP<3
+!i122 3
+Z12 d/home/alumnos/e400496/ARQO-main/arq0_riscv/sim
+Z13 8../rtl/alu_control.vhd
+Z14 F../rtl/alu_control.vhd
+l0
+Z15 L13 1
+VVMP8g[fNVCG<AVZDYO]F80
+!s100 oLnYYd:T7PmnjGEN;VYD^2
+Z16 OL;C;2020.1;71
+33
+Z17 !s110 1664535767
+!i10b 1
+Z18 !s108 1664535767.000000
+Z19 !s90 -reportprogress|300|-work|work|-2008|-explicit|-check_synthesis|../rtl/alu_control.vhd|
+Z20 !s107 ../rtl/alu_control.vhd|
+!i113 0
+Z21 o-work work -2008 -explicit -check_synthesis
+Z22 tExplicit 1 CvgOpt 0
+Artl
+R7
+R8
+R9
+R10
+R11
+DEx4 work 11 alu_control 0 22 VMP8g[fNVCG<AVZDYO]F80
+!i122 3
+l27
+L24 57
+VXm:7:Q=UQ2JHClJQ[4<jE1
+!s100 l3_@klS`^@2H9NJFa[gEg2
+R16
+33
+R17
+!i10b 1
+R18
+R19
+R20
+!i113 0
+R21
+R22
+Ealu_rv
+R6
+R7
+R8
+R9
+R10
+R11
+!i122 2
+R12
+Z23 8../rtl/alu_RV.vhd
+Z24 F../rtl/alu_RV.vhd
+l0
+Z25 L14 1
+V[QCO?]Mh7H;=P;8PAVm^80
+!s100 EfhfcnDS<T_Kfi:SHQMmL2
+R16
+33
+R17
+!i10b 1
+R18
+Z26 !s90 -reportprogress|300|-work|work|-2008|-explicit|-check_synthesis|../rtl/alu_RV.vhd|
+Z27 !s107 ../rtl/alu_RV.vhd|
+!i113 0
+R21
+R22
+Artl
+R7
+R8
+R9
+R10
+R11
+DEx4 work 6 alu_rv 0 22 [QCO?]Mh7H;=P;8PAVm^80
+!i122 2
+l33
+L26 32
+VWD=0MT2`0;]=NfSDao7oK1
+!s100 G:H7W9Ba9;Ec=Q60P2Tbk0
+R16
+33
+R17
+!i10b 1
+R18
+R26
+R27
+!i113 0
+R21
+R22
+Econtrol_unit
+R6
+R7
+R8
+R9
+R10
+R11
+!i122 4
+R12
+Z28 8../rtl/control_unit.vhd
+Z29 F../rtl/control_unit.vhd
+l0
+R25
+VH5nH^m9kKKMIHQD;^mk380
+!s100 U]KgeB@k:8DgUYQzk;[c30
+R16
+33
+R17
+!i10b 1
+R18
+Z30 !s90 -reportprogress|300|-work|work|-2008|-explicit|-check_synthesis|../rtl/control_unit.vhd|
+Z31 !s107 ../rtl/control_unit.vhd|
+!i113 0
+R21
+R22
+Artl
+R7
+R8
+R9
+R10
+R11
+DEx4 work 12 control_unit 0 22 H5nH^m9kKKMIHQD;^mk380
+!i122 4
+l37
+L35 45
+VL1n<M7Qeb9F^<<d<a`?]=2
+!s100 [gJL8]Yl?f_Dc9Bo7Lgc?3
+R16
+33
+R17
+!i10b 1
+R18
+R30
+R31
+!i113 0
+R21
+R22
+Eimm_gen
+R6
+R7
+R8
+R9
+Z32 DPx4 ieee 11 numeric_std 0 22 aU^R8eGcicLcUFIaBQSL>3
+R10
+R11
+!i122 5
+R12
+Z33 8../rtl/Imm_Generator.vhd
+Z34 F../rtl/Imm_Generator.vhd
+l0
+Z35 L12 1
+V;_zKIdohIj6YDS:W??nXe0
+!s100 hWiQg_W<D0:aGfX?GcLRj1
+R16
+33
+R17
+!i10b 1
+R18
+Z36 !s90 -reportprogress|300|-work|work|-2008|-explicit|-check_synthesis|../rtl/Imm_Generator.vhd|
+Z37 !s107 ../rtl/Imm_Generator.vhd|
+!i113 0
+R21
+R22
+Artl
+R7
+R8
+R9
+R32
+R10
+R11
+DEx4 work 7 imm_gen 0 22 ;_zKIdohIj6YDS:W??nXe0
+!i122 5
+l26
+L19 37
+V;J8Z>=?4bOeC;k77E0zZ^1
+!s100 n>`PNJgid0fD3akS8QU4C0
+R16
+33
+R17
+!i10b 1
+R18
+R36
+R37
+!i113 0
+R21
+R22
+Ememory_data
+R6
+Z38 DPx4 ieee 16 std_logic_textio 0 22 ^l:n6VFdg74Q?CKDhjD]D3
+R9
+R8
+R32
+R11
+R10
+!i122 7
+R12
+Z39 8memory_data.vhd
+Z40 Fmemory_data.vhd
+l0
+Z41 L18 1
+Vo<b]_>FignSk=aKb<53Kc2
+!s100 2gz[T:60A1__ci[I=PYO@1
+R16
+33
+R17
+!i10b 1
+R18
+Z42 !s90 -reportprogress|300|-work|work|-2008|-explicit|memory_data.vhd|
+Z43 !s107 memory_data.vhd|
+!i113 0
+Z44 o-work work -2008 -explicit
+R22
+Abehavioral
+R38
+R9
+R8
+R32
+R11
+R10
+DEx4 work 11 memory_data 0 22 o<b]_>FignSk=aKb<53Kc2
+!i122 7
+l42
+L34 75
+VjM1fQL;:9aWX[3LNHSR[<1
+!s100 NDh?F8Fgm;g`<A]3j5n;g3
+R16
+33
+R17
+!i10b 1
+R18
+R42
+R43
+!i113 0
+R44
+R22
+Ememory_instr
+R6
+R38
+R9
+R8
+R32
+R11
+R10
+!i122 8
+R12
+Z45 8memory_instr.vhd
+Z46 Fmemory_instr.vhd
+l0
+R41
+V:8CUJcdz8UJ0XzMolUY171
+!s100 _9GGl23;M19]_TVETbEdd1
+R16
+33
+R5
+!i10b 1
+R18
+Z47 !s90 -reportprogress|300|-work|work|-2008|-explicit|memory_instr.vhd|
+Z48 !s107 memory_instr.vhd|
+!i113 0
+R44
+R22
+Abehavioral
+R38
+R9
+R8
+R32
+R11
+R10
+DEx4 work 12 memory_instr 0 22 :8CUJcdz8UJ0XzMolUY171
+!i122 8
+l42
+L34 73
+V=2QEezRc9^:QX9obLTn^e1
+!s100 g`?aT1]ZQV;R7Z:ema0jD3
+R16
+33
+R5
+!i10b 1
+R18
+R47
+R48
+!i113 0
+R44
+R22
+Eprocessorrv
+Z49 w1664535670
+R32
+R7
+R8
+R9
+R10
+R11
+!i122 6
+R12
+Z50 8../rtl/processorRV.vhd
+Z51 F../rtl/processorRV.vhd
+l0
+R25
+VG1]h1WO60d`D2cl@3V[TC0
+!s100 ]jn[BOo]E_<i6U[`:KFEc3
+R16
+33
+R17
+!i10b 1
+R18
+Z52 !s90 -reportprogress|300|-work|work|-2008|-explicit|-check_synthesis|../rtl/processorRV.vhd|
+Z53 !s107 ../rtl/processorRV.vhd|
+!i113 0
+R21
+R22
+Artl
+R32
+R7
+R8
+R9
+R10
+R11
+DEx4 work 11 processorrv 0 22 G1]h1WO60d`D2cl@3V[TC0
+!i122 6
+l201
+L30 430
+VWN_?`XMVZ<=[G_X]`eaa?0
+!s100 G2m6n7UD0Q;0>Af>o@M[f2
+R16
+33
+R17
+!i10b 1
+R18
+R52
+R53
+!i113 0
+R21
+R22
+Eprocessorrv_tb
+R6
+R9
+R8
+R10
+R11
+!i122 9
+R12
+Z54 8processorR5_tb.vhd
+Z55 FprocessorR5_tb.vhd
+l0
+R15
+VOGoGL]f9OA>G<_RC_bkTF1
+!s100 S5faK9b[kahQ6PW4Q@FJD1
+R16
+33
+R5
+!i10b 1
+Z56 !s108 1664535768.000000
+Z57 !s90 -reportprogress|300|-work|work|-2008|-explicit|processorR5_tb.vhd|
+Z58 !s107 processorR5_tb.vhd|
+!i113 0
+R44
+R22
+Atb
+R9
+R8
+R10
+R11
+DEx4 work 14 processorrv_tb 0 22 OGoGL]f9OA>G<_RC_bkTF1
+!i122 9
+l94
+L23 149
+V3C;5]gh3`KImPRKOoVFgE1
+!s100 Qn`ZW0CNM9BBfdKn5I=7@2
+R16
+33
+R5
+!i10b 1
+R56
+R57
+R58
+!i113 0
+R44
+R22
+Ereg_bank
+R6
+R8
+R9
+R10
+R11
+!i122 1
+R12
+Z59 8../rtl/reg_bank.vhd
+Z60 F../rtl/reg_bank.vhd
+l0
+R35
+Ve__O?V@fm<8k_RaoXT9Mg0
+!s100 4BF[bl]Q>SCW97K@Bf]]@3
+R16
+33
+R17
+!i10b 1
+R18
+Z61 !s90 -reportprogress|300|-work|work|-2008|-explicit|-check_synthesis|../rtl/reg_bank.vhd|
+Z62 !s107 ../rtl/reg_bank.vhd|
+!i113 0
+R21
+R22
+Artl
+R8
+R9
+R10
+R11
+DEx4 work 8 reg_bank 0 22 e__O?V@fm<8k_RaoXT9Mg0
+!i122 1
+l32
+L26 34
+VQN3cahFP:GT7IaH7S^_1V3
+!s100 8=H9G2aa45zGIfP?i_OKM0
+R16
+33
+R17
+!i10b 1
+R18
+R61
+R62
+!i113 0
+R21
+R22
+Priscv_pack
+R8
+R9
+R10
+R11
+!i122 0
+R6
+R12
+Z63 8../rtl/RISCV_pack.vhd
+Z64 F../rtl/RISCV_pack.vhd
+l0
+R35
+VbR`K==KoP4KQ2hjM;TPN61
+!s100 WQQ:0kS]l<4zNOI=k?cVS0
+R16
+33
+R17
+!i10b 1
+R18
+Z65 !s90 -reportprogress|300|-work|work|-2008|../rtl/RISCV_pack.vhd|
+Z66 !s107 ../rtl/RISCV_pack.vhd|
+!i113 0
+Z67 o-work work -2008
+R22
+Bbody
+R7
+R8
+R9
+R10
+R11
+!i122 0
+l0
+L57 1
+VkkKMzelZ2aQU]B2a[VE8:2
+!s100 fJYkK2@g<>69n3<6T4eMh1
+R16
+33
+R17
+!i10b 1
+R18
+R65
+R66
+!i113 0
+R67
+R22

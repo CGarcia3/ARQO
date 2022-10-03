@@ -1,0 +1,7 @@
+forward unit es un process sin clock no reset (combinational?)
+forward data de mem o wb a ex
+sacar de teoria las condiciones a cumplir (segunda version que resuelve el doble algo?) slide revised forwarding condition
+change writing process inside register bank from rising edge to falling edge
+create new reset signal for flushing the instructions we dont want (cant use reset cause it resets everything)
+
+
