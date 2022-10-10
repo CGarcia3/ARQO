@@ -1,0 +1,3 @@
+check ultima pru_add and the 0x30 from later
+error en 400054 pq loadea mal desde la memory
+error en 40006c pq son valores distintos y no branchea (aunque deberian ser iguales)
